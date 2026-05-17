@@ -4,6 +4,7 @@ import { AppProvider, useApp } from './context/AppContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Sidebar from './components/Sidebar';
 import UserMenu from './components/UserMenu';
+import MobileNav from './components/MobileNav';
 import OnboardingModal from './components/OnboardingModal';
 import SyncCoach from './components/SyncCoach';
 import Landing from './pages/Landing';
@@ -46,6 +47,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </div>
+      <MobileNav />
       {!studentProfile.onboardingComplete && <OnboardingModal />}
       {studentProfile.onboardingComplete && <SyncCoach />}
     </>
