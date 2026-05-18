@@ -12,10 +12,9 @@ import { ArrowRight } from 'lucide-react';
  * No tabs, no topbar — this is a moment, not a screen.
  */
 
-// Curated Unsplash photo of an African student, lit warm.
-// Matches the photography tags already used on the Landing page.
-const HERO_PHOTO =
-  'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=1080&q=80';
+// Editorial portrait commissioned for the first-open hero.
+// Lives in /public so Vite serves it from the site root.
+const HERO_PHOTO = '/mfirst-hero.png';
 
 export default function MobileFirstOpen({ onBegin }: { onBegin: () => void }) {
   const navigate = useNavigate();

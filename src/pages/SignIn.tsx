@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  Mail, ArrowRight, Sparkles, Check, AlertCircle, User, Lock, Eye, EyeOff,
+  Mail, ArrowRight, Check, AlertCircle, User, Lock, Eye, EyeOff,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -217,19 +217,11 @@ export default function SignIn() {
           </button>
         </div>
 
-        <div className="signin-eyebrow">
-          <Sparkles size={13} /> {mode === 'signup' ? 'Start your story' : 'Welcome back'}
-        </div>
         <h1 className="signin-title">
           {mode === 'signup'
             ? <>Begin <em>your journey.</em></>
             : <>Continue <em>your story.</em></>}
         </h1>
-        <p className="signin-sub">
-          {mode === 'signup'
-            ? 'A few details, then a magic link to confirm your email — and your space is yours.'
-            : 'Sign in with your email and password.'}
-        </p>
 
         <form onSubmit={onSubmit} className="signin-form">
           {mode === 'signup' && (
@@ -304,11 +296,9 @@ export default function SignIn() {
 
           {mode === 'signup' && (
             <p className="signin-tos">
-              By creating an account you agree to our{' '}
+              By continuing you agree to our{' '}
               <a href="#" onClick={e => e.preventDefault()}>Terms</a> and{' '}
-              <a href="#" onClick={e => e.preventDefault()}>Privacy Policy</a>.
-              You'll get a confirmation email to verify your address — that's how we keep
-              your account safe.
+              <a href="#" onClick={e => e.preventDefault()}>Privacy</a>.
             </p>
           )}
 
@@ -324,21 +314,9 @@ export default function SignIn() {
           )}
         </form>
 
-        <div className="signin-divider"><span>or</span></div>
-
-        <p className="signin-firsttime">
-          <Sparkles size={11} />{' '}
-          {mode === 'signup'
-            ? <><strong>Already have an account?</strong> Use <em>Sign in</em> above.</>
-            : <><strong>First time here?</strong> Tap <em>Create account</em> above — it takes 30 seconds.</>}
-        </p>
-
         <button className="btn btn-ghost signin-skip" onClick={() => navigate('/today')}>
           Continue without an account
         </button>
-        <p className="signin-skip-hint">
-          Your work stays on this device until you sign in.
-        </p>
       </div>
     </div>
   );
