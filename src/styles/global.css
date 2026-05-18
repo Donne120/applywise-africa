@@ -6216,31 +6216,39 @@ label { font-size: 13px; color: var(--text-soft); font-weight: 500; }
     cursor: pointer;
   }
 
-  /* Focus card horizontal scroller */
+  /* Focus card horizontal scroller — slowed, single-card-per-swipe */
   .mtoday-focus-scroller {
-    display: flex; gap: 12px;
-    padding: 4px 16px 8px;
+    display: flex; gap: 14px;
+    padding: 6px 16px 10px;
     overflow-x: auto;
+    /* `mandatory` + `always` = exactly one card per gesture, no skipping */
     scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scroll-padding-left: 16px;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+    /* Slow the inertial deceleration on iOS so the snap feels gentler */
+    overscroll-behavior-x: contain;
   }
   .mtoday-focus-scroller::-webkit-scrollbar { display: none; }
   .mtoday-focus-card {
-    flex: 0 0 calc(100% - 32px);
-    scroll-snap-align: center;
+    flex: 0 0 calc(100% - 48px);
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
     display: flex; flex-direction: column; gap: 8px;
     padding: 16px;
-    min-height: 140px;
+    min-height: 150px;
     border-radius: var(--r-lg);
     background: var(--surface);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
     text-align: left;
     cursor: pointer;
-    transition: transform var(--dur) var(--ease);
+    /* Slower settling animation when the card snaps into place */
+    transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 320ms var(--ease);
   }
-  .mtoday-focus-card:active { transform: scale(0.98); }
+  .mtoday-focus-card:active { transform: scale(0.985); }
   .mtoday-focus-card.kind-deadline { background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%); border-color: #FBC9CE; }
   .mtoday-focus-card.kind-task     { background: linear-gradient(135deg, #F0F4FF 0%, #E4ECFF 100%); border-color: #C7D6F4; }
   .mtoday-focus-card.kind-draft    { background: linear-gradient(135deg, #F5EEFF 0%, #EADBFF 100%); border-color: #D6C0F0; }
@@ -7068,4 +7076,160 @@ label { font-size: 13px; color: var(--text-soft); font-weight: 500; }
     bottom: calc(80px + env(safe-area-inset-bottom));
     max-width: none;
   }
+}
+
+/* ============================================================
+   LANDING PAGE — Mobile pass
+   Brings the marketing site up to the same polish as the app.
+   ============================================================ */
+
+@media (max-width: 860px) {
+  /* ── Topbar: compact, tap-friendly ───────────────────────── */
+  .landing-topbar-inner {
+    padding: 10px 14px;
+  }
+  .landing-brand-name {
+    font-size: 15px;
+  }
+  .landing-brand .brand-icon { width: 28px; height: 28px; font-size: 14px; }
+  .landing-topbar-actions {
+    gap: 8px;
+  }
+  .landing-topbar-link {
+    font-size: 13px;
+    padding: 6px 4px;
+  }
+  /* Hide "Pricing" anchor on phones — it's already lower in the scroll */
+  .landing-topbar-actions a.landing-topbar-link { display: none; }
+  .landing-topbar-actions .btn { padding: 8px 12px; font-size: 12px; }
+
+  /* ── Hero: tighter type scale, full-width CTAs ───────────── */
+  .landing-hero { padding: 24px 18px 36px; }
+  .landing-hero-inner { gap: 24px; }
+  .landing-hero-eyebrow {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+  .landing-hero-title {
+    font-size: clamp(28px, 8.5vw, 38px);
+    line-height: 1.08;
+  }
+  .landing-hero-sub {
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+  .landing-hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin-top: 2px;
+  }
+  .landing-hero-actions .btn { width: 100%; justify-content: center; }
+  .landing-hero-actions .btn-lg { padding: 14px 18px; font-size: 14px; }
+  .landing-hero-actions .btn-ghost { padding: 10px 14px; font-size: 13px; }
+  .landing-hero-meta {
+    gap: 8px 14px;
+    margin-top: 2px;
+  }
+  .landing-hero-tick { font-size: 11.5px; }
+
+  /* Hero art card shrinks + content scales down */
+  .hero-card { max-width: 100%; padding: 16px; }
+  .hero-card-ring-row { gap: 12px; }
+  .hero-ring { width: 110px !important; height: 110px !important; }
+  .hero-ring-num { font-size: 28px !important; }
+  .hero-ring-suffix { font-size: 11px !important; }
+  .hero-pillar { font-size: 11px; gap: 6px; }
+  .hero-pillar-bar { height: 5px; }
+  .hero-card-footer { font-size: 11px; }
+
+  /* ── Numbers strip: 2x2 already, just tighten ────────────── */
+  .numbers-strip { padding: 28px 18px 0; }
+  .numbers-stat-val { font-size: clamp(28px, 10vw, 40px); }
+  .numbers-stat-label { font-size: 11px; }
+  .numbers-honesty { font-size: 13px; line-height: 1.5; padding: 0 4px; }
+
+  /* ── Moments: single column already; tighten + restack ─── */
+  .landing-moment { padding: 40px 18px; }
+  .landing-moment-inner { gap: 28px; }
+  /* Always lead with text so users read before the demo */
+  .landing-moment-inner.reverse > :first-child { order: 2; }
+  .landing-moment-text h2 {
+    font-size: clamp(24px, 7vw, 32px);
+    line-height: 1.15;
+  }
+  .landing-moment-text p {
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+  .landing-moment-num {
+    font-size: 32px;
+  }
+  .landing-tick-list li {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  /* Moment 1 — field art card */
+  .moment1-card { padding: 12px; }
+  .moment1-art-img { aspect-ratio: 16/10; }
+  .moment1-art-pill { font-size: 11px; padding: 5px 10px; bottom: 10px; left: 10px; }
+  .moment1-chips { gap: 5px; }
+  .field-chip { font-size: 10.5px; padding: 4px 8px; }
+
+  /* Moment 2 — story vault */
+  .moment2-vault { padding: 14px; }
+  .moment2-story-title { font-size: 14px; }
+  .moment2-story-body { font-size: 13.5px; line-height: 1.55; }
+  .moment2-essays { gap: 8px; }
+  .moment2-essay { padding: 10px 12px; }
+  .moment2-essay-type { font-size: 11px; }
+  .moment2-essay-preview { font-size: 12.5px; line-height: 1.45; }
+
+  /* Moment 3 — readiness pillars */
+  .moment3-card { padding: 14px; gap: 10px; }
+  .moment3-pillar-row { font-size: 13px; }
+  .moment3-num { font-size: 13px; }
+  .moment3-note { font-size: 11.5px; line-height: 1.4; }
+
+  /* ── Pricing: single column, large tap targets ───────────── */
+  .landing-pricing { padding: 40px 18px; }
+  .landing-pricing > * + * { margin-top: 14px; }
+  .landing-pricing h2 {
+    font-size: clamp(26px, 7vw, 32px);
+    line-height: 1.15;
+  }
+  .landing-pricing .pricing-grid,
+  .landing-pricing-cards,
+  .pricing-cards {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+  .pricing-card {
+    padding: 18px;
+  }
+  .pricing-card .btn { width: 100%; justify-content: center; }
+  .pricing-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ── Closing CTA + footer ────────────────────────────────── */
+  .landing-cta { padding: 40px 18px; }
+  .landing-cta h2 { font-size: clamp(24px, 7vw, 32px); line-height: 1.15; }
+  .landing-cta p { font-size: 14.5px; line-height: 1.55; }
+  .landing-cta .btn { width: 100%; justify-content: center; }
+
+  .landing-footer { padding: 24px 18px 36px; font-size: 12px; }
+  .landing-footer a { padding: 6px 0; display: inline-block; }
+}
+
+/* ── Extra-small phones (iPhone SE, sub-360px) ───────────── */
+@media (max-width: 380px) {
+  .landing-hero-title { font-size: 26px; }
+  .landing-hero-sub { font-size: 13.5px; }
+  .landing-hero-eyebrow { font-size: 10.5px; padding: 4px 8px; }
+  .hero-ring { width: 96px !important; height: 96px !important; }
+  .hero-ring-num { font-size: 24px !important; }
+  .landing-moment-text h2 { font-size: 22px; }
 }
