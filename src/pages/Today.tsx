@@ -7,8 +7,18 @@ import {
 import { useApp } from '../context/AppContext';
 import { formatDeadline } from '../utils/helpers';
 import { getFieldHero, FIELD_GREETING } from '../utils/fieldAssets';
+import MobileToday from '../components/MobileToday';
 
 export default function Today() {
+  return (
+    <>
+      <div className="today-desktop-only"><TodayDesktop /></div>
+      <div className="today-mobile-only"><MobileToday /></div>
+    </>
+  );
+}
+
+function TodayDesktop() {
   const { studentProfile, scholarships, tasks, writingDocuments, resources } = useApp();
   const navigate = useNavigate();
 

@@ -3,11 +3,12 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   Menu, X, Calendar, GraduationCap, Compass, PenTool,
   Sprout, Users, Sun, Moon, Globe, BookHeart, LogOut, LogIn,
-  User, CreditCard, ShieldCheck,
+  User, CreditCard, ShieldCheck, Plus, Mic, Sparkles, Flame,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { isAdminUser } from '../utils/admin';
+import VoiceComposer from './VoiceComposer';
 
 /**
  * Mobile-only top bar + slide-out drawer + bottom tab-bar.
@@ -25,12 +26,23 @@ import { isAdminUser } from '../utils/admin';
  *   theme toggle, and sign-in / sign-out.
  */
 
-const NAV_ITEMS = [
+const NAV_LEFT = [
   { to: '/today',        icon: Calendar,      label: 'Today' },
   { to: '/applications', icon: GraduationCap, label: 'Apps' },
+];
+const NAV_RIGHT = [
   { to: '/writing',      icon: PenTool,       label: 'Write' },
   { to: '/grow',         icon: Sprout,        label: 'Grow' },
 ];
+
+const STREAK_KEY = 'udonpass-streak-v1';
+function readStreak(): number {
+  try {
+    const raw = localStorage.getItem(STREAK_KEY);
+    if (raw) return JSON.parse(raw).count || 0;
+  } catch { /* ignore */ }
+  return 0;
+}
 
 // Full nav (drawer) — includes everything from the desktop sidebar plus the
 // secondary destinations (Discover / Stories / Recommenders) that don't fit
@@ -55,10 +67,19 @@ function getInitialTheme(): Theme {
 export default function MobileNav() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { studentProfile, currentPlan } = useApp();
+  const { studentProfile, currentPlan, scholarships } = useApp();
   const { user, signOut, configured } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [fabOpen, setFabOpen] = useState(false);
+  const [voiceOpen, setVoiceOpen] = useState(false);
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const streak = readStreak();
+
+  const upcoming = [...scholarships]
+    .filter(s => !s.isPastDue && s.daysLeft !== null && s.status !== 'Submitted' && s.status !== 'Accepted')
+    .sort((a, b) => (a.daysLeft ?? 9999) - (b.daysLeft ?? 9999))[0];
+  const daysToNext = upcoming?.daysLeft ?? null;
+  const urgent = daysToNext !== null && daysToNext <= 14;
 
   // Sync theme attribute & persist
   useEffect(() => {
@@ -67,7 +88,7 @@ export default function MobileNav() {
   }, [theme]);
 
   // Close drawer when route changes (after the user taps an item)
-  useEffect(() => { setDrawerOpen(false); }, [location.pathname]);
+  useEffect(() => { setDrawerOpen(false); setFabOpen(false); }, [location.pathname]);
 
   // Prevent body scroll when drawer is open
   useEffect(() => {
@@ -95,7 +116,7 @@ export default function MobileNav() {
 
   return (
     <>
-      {/* ── Top bar (sticky) ──────────────────────────────────── */}
+      {/* ── Top bar (sticky, gamified) ─────────────────────────── */}
       <div className="mobile-topbar">
         <button
           className="mobile-topbar-menu"
@@ -104,10 +125,26 @@ export default function MobileNav() {
         >
           <Menu size={22} />
         </button>
-        <div className="mobile-topbar-brand">
-          <span className="mobile-topbar-icon">🎓</span>
-          <span>ApplyWise</span>
+
+        <div className="mobile-topbar-gamify">
+          <div className="mobile-topbar-chip streak" aria-label={`${streak}-day streak`}>
+            <Flame size={13} />
+            <span>{streak}</span>
+          </div>
+          {daysToNext !== null ? (
+            <div className={`mobile-topbar-chip countdown ${urgent ? 'urgent' : ''}`}>
+              <span className="mobile-topbar-chip-val">{daysToNext}d</span>
+              <span className="mobile-topbar-chip-lbl">
+                to {upcoming!.name.length > 18 ? upcoming!.name.slice(0, 16) + '…' : upcoming!.name}
+              </span>
+            </div>
+          ) : (
+            <div className="mobile-topbar-chip countdown">
+              <span className="mobile-topbar-chip-lbl">No deadline yet</span>
+            </div>
+          )}
         </div>
+
         <button
           className="mobile-topbar-avatar"
           aria-label="Open menu"
@@ -117,9 +154,31 @@ export default function MobileNav() {
         </button>
       </div>
 
-      {/* ── Bottom tab bar (sticky) ──────────────────────────── */}
-      <nav className="mobile-tabbar" aria-label="Primary">
-        {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
+      {/* ── Bottom tab bar with center FAB ─────────────────────── */}
+      <nav className="mobile-tabbar with-fab" aria-label="Primary">
+        {NAV_LEFT.map(({ to, icon: Icon, label }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={to === '/today'}
+            className={({ isActive }) => `mobile-tab ${isActive ? 'active' : ''}`}
+          >
+            <Icon size={20} />
+            <span className="mobile-tab-label">{label}</span>
+          </NavLink>
+        ))}
+
+        <button
+          type="button"
+          className={`mobile-fab ${fabOpen ? 'open' : ''}`}
+          aria-label="Quick actions"
+          aria-expanded={fabOpen}
+          onClick={() => setFabOpen(o => !o)}
+        >
+          <Plus size={26} />
+        </button>
+
+        {NAV_RIGHT.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
             to={to}
@@ -131,6 +190,44 @@ export default function MobileNav() {
           </NavLink>
         ))}
       </nav>
+
+      {/* ── Radial quick-action menu ───────────────────────────── */}
+      {fabOpen && (
+        <div className="mobile-fab-sheet" onClick={() => setFabOpen(false)}>
+          <div className="mobile-fab-actions" onClick={e => e.stopPropagation()}>
+            <button
+              className="mobile-fab-action"
+              onClick={() => { setFabOpen(false); navigate('/discover'); }}
+            >
+              <span className="mobile-fab-action-icon"><GraduationCap size={18} /></span>
+              <span>Add scholarship</span>
+            </button>
+            <button
+              className="mobile-fab-action"
+              onClick={() => { setFabOpen(false); setVoiceOpen(true); }}
+            >
+              <span className="mobile-fab-action-icon"><Mic size={18} /></span>
+              <span>Voice a story</span>
+            </button>
+            <button
+              className="mobile-fab-action"
+              onClick={() => { setFabOpen(false); navigate('/writing'); }}
+            >
+              <span className="mobile-fab-action-icon"><Sparkles size={18} /></span>
+              <span>Ask ApplyWise AI</span>
+            </button>
+            <button
+              className="mobile-fab-action"
+              onClick={() => { setFabOpen(false); navigate('/tasks'); }}
+            >
+              <span className="mobile-fab-action-icon"><Calendar size={18} /></span>
+              <span>Snap a deadline</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      <VoiceComposer open={voiceOpen} onClose={() => setVoiceOpen(false)} />
 
       {/* ── Drawer ──────────────────────────────────────────── */}
       {drawerOpen && (

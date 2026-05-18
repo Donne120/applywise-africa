@@ -1,0 +1,16 @@
+{
+  "name": "ApplyWise Africa",
+  "short_name": "ApplyWise",
+  "description": "Your scholarship companion — one place for every application, deadline, and essay.",
+  "start_url": "/today",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF8F5",
+  "theme_color": "#E8A0A8",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "en"
+}

@@ -19,7 +19,9 @@ import {
   scoreWriting,
 } from '../services/gemini';
 import { generateId } from '../utils/helpers';
+import { saveOfflineDraft, loadOfflineDraft, clearOfflineDraft } from '../utils/offlineDrafts';
 import VoiceInput from '../components/VoiceInput';
+import OfflineBadge from '../components/OfflineBadge';
 import UpgradeModal from '../components/UpgradeModal';
 
 // â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -113,6 +115,22 @@ export default function ApplyWise() {
   const [qualityScores, setQualityScores] = useState<QualityScores | null>(null);
   const [scoringLoading, setScoringLoading] = useState(false);
 
+  // Offline autosave: debounce-write the body whenever it changes for a doc
+  const [offlineSavedAt, setOfflineSavedAt] = useState<string | null>(null);
+  useEffect(() => {
+    if (!activeDoc?.id) return;
+    const id = setTimeout(() => {
+      saveOfflineDraft(activeDoc.id, finalWriting);
+      setOfflineSavedAt(new Date().toISOString());
+      // If we're online and the doc's persisted body already matches, the
+      // normal cloud-save path has caught up — drop the offline copy.
+      if (navigator.onLine && activeDoc.finalWriting === finalWriting) {
+        clearOfflineDraft(activeDoc.id);
+      }
+    }, 800);
+    return () => clearTimeout(id);
+  }, [finalWriting, activeDoc]);
+
   const hasApiKey = !!(import.meta.env.VITE_GEMINI_API_KEY as string | undefined)?.trim();
 
   // Pre-fill from URL param
@@ -125,6 +143,19 @@ export default function ApplyWise() {
       setStep(1);
     }
   }, [prefillScholarship]);
+
+  // Pre-fill from VoiceComposer (?seed=voice)
+  useEffect(() => {
+    if (searchParams.get('seed') !== 'voice') return;
+    try {
+      const seed = sessionStorage.getItem('udonpass-voice-seed');
+      if (seed) {
+        setRawInput(prev => prev ? prev + '\n\n' + seed : seed);
+        sessionStorage.removeItem('udonpass-voice-seed');
+        setStep(s => (s === 0 ? 2 : s));
+      }
+    } catch { /* ignore */ }
+  }, [searchParams]);
 
   // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -332,10 +363,13 @@ export default function ApplyWise() {
     setProfileSummary(doc.profileSummary);
     setStoryAngle(doc.storyAngle);
     setOutline(doc.outline);
-    setFinalWriting(doc.finalWriting);
+    const offline = loadOfflineDraft(doc.id);
+    const useOffline = offline && offline.body && offline.body !== doc.finalWriting;
+    setFinalWriting(useOffline ? offline!.body : doc.finalWriting);
+    setOfflineSavedAt(offline?.savedAt ?? null);
     setQualityScores(doc.qualityScores);
     setActiveTab('Write');
-    setStep(doc.finalWriting ? 7 : doc.profileSummary ? 4 : doc.rawInput ? 2 : 1);
+    setStep((useOffline ? offline!.body : doc.finalWriting) ? 7 : doc.profileSummary ? 4 : doc.rawInput ? 2 : 1);
   };
 
   const resetWorkspace = () => {
@@ -343,7 +377,7 @@ export default function ApplyWise() {
     setStep(0);
     setRawInput(''); setFollowUpQs([]); setUserAnswers([]);
     setProfileSummary(''); setStoryAngle(''); setOutline('');
-    setFinalWriting(''); setQualityScores(null); setError('');
+    setFinalWriting(''); setQualityScores(null); setError(''); setOfflineSavedAt(null);
   };
 
   // â”€â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -360,6 +394,7 @@ export default function ApplyWise() {
           </div>
         </div>
         <div className="aw-header-right">
+          {activeDoc && <OfflineBadge savedAt={offlineSavedAt} />}
           <div className="aw-credits-badge">
             <CreditCard size={14} />
             <span>

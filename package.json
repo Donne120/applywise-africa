@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cap:init": "cap init ApplyWise com.applywise.africa --web-dir=dist",
+    "cap:add:android": "cap add android",
+    "cap:build": "npm run build && cap sync",
+    "cap:open": "cap open android"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

@@ -436,12 +436,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const updateScholarshipStatus = useCallback((id: string, status: Scholarship['status']) => {
     let updated: Scholarship | undefined;
+    let prevStatus: Scholarship['status'] | undefined;
     setScholarships(prev => prev.map(s => {
       if (s.id !== id) return s;
+      prevStatus = s.status;
       updated = { ...s, status };
       return updated;
     }));
     if (updated && user) cloudWrite(() => dbSaveScholarship(user.id, updated!));
+    if (updated && prevStatus !== status && (status === 'Submitted' || status === 'Accepted')) {
+      const eventName = status === 'Accepted' ? 'applywise:accepted' : 'applywise:submitted';
+      try {
+        window.dispatchEvent(new CustomEvent(eventName, {
+          detail: { id: updated.id, name: updated.name },
+        }));
+      } catch { /* ignore */ }
+    }
   }, [user]);
 
   const addScholarship = useCallback((s: Scholarship) => {

@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { generateId } from '../utils/helpers';
 import VoiceInput from '../components/VoiceInput';
+import MobileWorkspace from '../components/MobileWorkspace';
 import { useApp } from '../context/AppContext';
 import { computeReadiness, toneLabel } from '../utils/readiness';
 import type { PillarScore } from '../utils/readiness';
@@ -65,6 +66,11 @@ export default function ApplicationWorkspace() {
   const [retroOpen, setRetroOpen] = useState(false);
 
   return (
+    <>
+      <div className="workspace-mobile-only">
+        <MobileWorkspace scholarship={scholarship} />
+      </div>
+      <div className="workspace-desktop-only">
     <div className="page workspace-page">
       <button className="workspace-back" onClick={() => navigate('/applications')}>
         <ArrowLeft size={14} /> All applications
@@ -302,6 +308,8 @@ export default function ApplicationWorkspace() {
         />
       )}
     </div>
+      </div>
+    </>
   );
 }
 
