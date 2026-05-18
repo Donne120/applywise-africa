@@ -69,6 +69,11 @@ export default function Landing() {
   };
 
   const [firstOpenSeen, setFirstOpenSeen] = useState<boolean>(() => {
+    // ?first=1 force-shows the welcome (useful for review/QA)
+    if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('first') === '1') {
+      try { localStorage.removeItem(FIRST_OPEN_KEY); } catch { /* ignore */ }
+      return false;
+    }
     try { return localStorage.getItem(FIRST_OPEN_KEY) === '1'; } catch { return false; }
   });
   const dismissFirstOpen = () => {

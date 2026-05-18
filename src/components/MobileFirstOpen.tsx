@@ -5,12 +5,17 @@ import { ArrowRight } from 'lucide-react';
  * MobileFirstOpen — the editorial welcome (mobile-redesign-v2 §5.1)
  *
  * Shown to a user who lands on the app for the first time on mobile,
- * before onboarding. Full-bleed gradient hero stands in for a
- * commissioned photograph (v1 — see spec §10 question 1).
+ * before onboarding. Full-bleed photograph of an African student with
+ * a slow ken-burns zoom — "Editorial Calm" with quiet life.
  *
  * One headline. One sentence. One button. One text link.
  * No tabs, no topbar — this is a moment, not a screen.
  */
+
+// Curated Unsplash photo of an African student, lit warm.
+// Matches the photography tags already used on the Landing page.
+const HERO_PHOTO =
+  'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=1080&q=80';
 
 export default function MobileFirstOpen({ onBegin }: { onBegin: () => void }) {
   const navigate = useNavigate();
@@ -18,6 +23,8 @@ export default function MobileFirstOpen({ onBegin }: { onBegin: () => void }) {
   return (
     <div className="mfirst">
       <div className="mfirst-hero" aria-hidden="true">
+        <img src={HERO_PHOTO} alt="" className="mfirst-hero-img" />
+        <div className="mfirst-hero-tint" />
         <div className="mfirst-hero-overlay" />
       </div>
 
