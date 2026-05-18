@@ -7,13 +7,13 @@ import {
 import { useApp } from '../context/AppContext';
 import { formatDeadline } from '../utils/helpers';
 import { getFieldHero, FIELD_GREETING } from '../utils/fieldAssets';
-import MobileToday from '../components/MobileToday';
+import MobileHome from '../components/MobileHome';
 
 export default function Today() {
   return (
     <>
       <div className="today-desktop-only"><TodayDesktop /></div>
-      <div className="today-mobile-only"><MobileToday /></div>
+      <div className="today-mobile-only"><MobileHome /></div>
     </>
   );
 }

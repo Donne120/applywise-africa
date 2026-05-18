@@ -23,6 +23,7 @@ import { saveOfflineDraft, loadOfflineDraft, clearOfflineDraft } from '../utils/
 import VoiceInput from '../components/VoiceInput';
 import OfflineBadge from '../components/OfflineBadge';
 import UpgradeModal from '../components/UpgradeModal';
+import EssayReveal from '../components/EssayReveal';
 
 // â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -107,6 +108,7 @@ export default function ApplyWise() {
 
   // Step 5/6
   const [finalWriting, setFinalWriting] = useState('');
+  const [revealText, setRevealText] = useState<string | null>(null);
   const [formattingStyle, setFormattingStyle] = useState<OutputStyle>('Structured Essay');
   const [paraLength, setParaLength] = useState<ParagraphLength>('Medium');
   const [countryStyle, setCountryStyle] = useState<CountryStyle>('Other');
@@ -273,8 +275,10 @@ export default function ApplyWise() {
       return;
     }
     if (!hasApiKey) {
-      setFinalWriting(getMockWriting(writingType, degreeLevel, targetUniversity, targetCountry, targetProgram, scholarshipName));
+      const mock = getMockWriting(writingType, degreeLevel, targetUniversity, targetCountry, targetProgram, scholarshipName);
+      setFinalWriting(mock);
       setStep(6);
+      setRevealText(mock);
       return;
     }
     setIsLoading(true);
@@ -289,6 +293,7 @@ export default function ApplyWise() {
       }, studentProfile, stories);
       setFinalWriting(text);
       setStep(6);
+      setRevealText(text);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Writing generation failed. Try again.');
     } finally {
@@ -534,6 +539,14 @@ export default function ApplyWise() {
       )}
 
       {upgradeOpen && <UpgradeModal reason="essay" onClose={() => setUpgradeOpen(false)} />}
+
+      {revealText && (
+        <EssayReveal
+          text={revealText}
+          stories={stories}
+          onContinue={() => setRevealText(null)}
+        />
+      )}
     </div>
   );
 }
