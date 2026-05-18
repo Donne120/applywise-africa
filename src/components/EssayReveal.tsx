@@ -18,7 +18,6 @@ import type { Story } from '../types';
  */
 
 const CHAR_DELAY = 14;          // ms per character — slow enough to read, fast enough not to bore
-const ATTRIBUTION_FADE = 240;   // ms before attribution chip appears after paragraph completes
 const PARAGRAPH_GAP = 360;      // ms pause between paragraphs
 
 type Props = {
