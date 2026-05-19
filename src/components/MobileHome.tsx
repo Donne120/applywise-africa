@@ -107,7 +107,10 @@ export default function MobileHome() {
 
   return (
     <div className="page mhome">
-      <div className="mhome-greet">{greeting}</div>
+      <div className="mhome-greet-row">
+        <img src="/home-coach.png" alt="" className="mhome-coach-portrait" aria-hidden="true" />
+        <div className="mhome-greet">{greeting}</div>
+      </div>
 
       {view.headline && (
         <h1 className="mhome-headline">{view.headline}</h1>

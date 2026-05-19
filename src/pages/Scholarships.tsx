@@ -63,6 +63,7 @@ export default function Scholarships() {
           </div>
         </div>
         <div className="empty applications-empty">
+          <img src="/apply-empty.png" alt="" className="mobile-empty-image" aria-hidden="true" />
           <div className="empty-emoji">🌍</div>
           <h2>Your scholarship journey starts here.</h2>
           <p>

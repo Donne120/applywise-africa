@@ -339,6 +339,7 @@ export default function Finder() {
         <div className="finder-results">
           {results.length === 0 ? (
             <div className="empty applications-empty">
+              <img src="/find-empty.png" alt="" className="mobile-empty-image" aria-hidden="true" />
               <div className="empty-emoji">🌷</div>
               <h2>No scholarships matched.</h2>
               <p>

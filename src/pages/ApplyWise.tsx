@@ -389,6 +389,10 @@ export default function ApplyWise() {
 
   return (
     <div className="page aw-page">
+      <div className="mobile-hero-banner mobile-hero-write" aria-hidden="true">
+        <img src="/write-hero.png" alt="" />
+        <div className="mobile-hero-banner-fade" />
+      </div>
       {/* Header */}
       <div className="aw-header">
         <div className="aw-header-left">

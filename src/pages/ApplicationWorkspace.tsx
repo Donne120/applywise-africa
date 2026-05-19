@@ -7,6 +7,7 @@ import {
 import { generateId } from '../utils/helpers';
 import VoiceInput from '../components/VoiceInput';
 import MobileWorkspace from '../components/MobileWorkspace';
+import SubmitCelebrate from '../components/SubmitCelebrate';
 import { useApp } from '../context/AppContext';
 import { computeReadiness, toneLabel } from '../utils/readiness';
 import type { PillarScore } from '../utils/readiness';
@@ -64,6 +65,7 @@ export default function ApplicationWorkspace() {
   const retro = retrospectives.find(r => r.scholarshipId === scholarship.id);
   const showRetroPrompt = scholarship.status === 'Rejected' && !retro;
   const [retroOpen, setRetroOpen] = useState(false);
+  const [showCelebrate, setShowCelebrate] = useState(false);
 
   return (
     <>
@@ -274,7 +276,11 @@ export default function ApplicationWorkspace() {
           <button
             key={s}
             className={`status-btn ${scholarship.status === s ? 'active' : ''}`}
-            onClick={() => updateScholarshipStatus(scholarship.id, s)}
+            onClick={() => {
+              const wasNotSubmitted = scholarship.status !== 'Submitted' && scholarship.status !== 'Accepted';
+              updateScholarshipStatus(scholarship.id, s);
+              if (s === 'Submitted' && wasNotSubmitted) setShowCelebrate(true);
+            }}
           >
             {s}
           </button>
@@ -307,6 +313,7 @@ export default function ApplicationWorkspace() {
           onClose={() => setRetroOpen(false)}
         />
       )}
+      {showCelebrate && <SubmitCelebrate onDone={() => setShowCelebrate(false)} />}
     </div>
       </div>
     </>

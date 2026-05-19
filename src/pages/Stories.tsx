@@ -42,6 +42,10 @@ export default function Stories() {
 
   return (
     <div className="page stories-page">
+      <div className="mobile-hero-banner mobile-hero-story" aria-hidden="true">
+        <img src="/story-hero.png" alt="" />
+        <div className="mobile-hero-banner-fade" />
+      </div>
       {/* Hero */}
       <div className="stories-hero">
         <div className="stories-hero-text">
