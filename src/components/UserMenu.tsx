@@ -41,6 +41,7 @@ export default function UserMenu() {
       localStorage.removeItem('udonpass-stories');
       localStorage.removeItem('udonpass-recommenders');
       localStorage.removeItem('udonpass-retros');
+      localStorage.removeItem('udonpass-writing-docs');
       localStorage.removeItem('udonpass-sync-coach-dismissed-v1');
       sessionStorage.removeItem('udonpass-next-after-signin');
     } catch { /* ignore */ }

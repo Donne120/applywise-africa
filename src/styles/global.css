@@ -5138,6 +5138,81 @@ label { font-size: 13px; color: var(--text-soft); font-weight: 500; }
   align-items: center;
 }
 @media (max-width: 1024px) { .aw-header { grid-template-columns: auto 1fr; } .aw-header-art { display: none; } }
+
+/* ── Writing Studio — mobile (mobile-redesign-v2 §5.x) ──────────────────
+   Below 860px the desktop grid is too cramped: the 52px icon, the title,
+   and a right-side credits column all fight for room. Collapse to a single
+   column, shrink the header chrome, let the tab strip scroll, and pad the
+   page generously for one-thumb editing. */
+@media (max-width: 860px) {
+  .aw-page { padding: 14px 16px 80px; }
+
+  .aw-header {
+    grid-template-columns: 1fr;
+    padding: 14px;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .aw-header-left { gap: 12px; }
+  .aw-header-icon { width: 44px; height: 44px; border-radius: var(--r-sm); }
+  .aw-header-left h1 { font-size: 20px; line-height: 1.2; }
+  .aw-header-left .page-subtitle { font-size: 13px; line-height: 1.45; margin-top: 2px; }
+  .aw-header-right {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+  .aw-credits-badge { padding: 6px 10px; font-size: 12px; }
+
+  .aw-ethics-notice {
+    font-size: 12px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+  }
+
+  /* Tab strip: horizontal scroll, full-bleed, snap. No wrap, no overflow. */
+  .aw-tabs {
+    width: auto;
+    margin: 0 -16px 14px;
+    padding: 4px 16px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .aw-tabs::-webkit-scrollbar { display: none; }
+  .aw-tab {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    padding: 8px 14px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  /* Mode picker: one card per row reads cleaner than a squeezed 2-up grid. */
+  .aw-mode-grid { grid-template-columns: 1fr; gap: 10px; }
+  .aw-mode-card { padding: 14px; }
+
+  /* Step cards + output: edge-friendly padding, no horizontal scroll. */
+  .aw-step-card { padding: 16px; }
+  .aw-step-title { font-size: 18px; }
+  .aw-output-toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .aw-output-actions { flex-wrap: wrap; }
+  .aw-toolbar-btn { padding: 8px 10px; font-size: 12.5px; }
+  .aw-writing-editor { font-size: 15px; line-height: 1.65; }
+
+  /* Saved-docs grid: single column on mobile so titles don't truncate. */
+  .aw-saved-grid { grid-template-columns: 1fr; gap: 10px; }
+}
 .aw-header-left { display: flex; align-items: center; gap: 14px; }
 .aw-header-icon {
   width: 52px; height: 52px;

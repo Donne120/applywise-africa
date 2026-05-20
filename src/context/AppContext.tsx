@@ -49,6 +49,7 @@ const PROFILE_STORAGE_KEY = 'udonpass-profile';
 const STORIES_STORAGE_KEY = 'udonpass-stories';
 const RECOMMENDERS_STORAGE_KEY = 'udonpass-recommenders';
 const RETROS_STORAGE_KEY = 'udonpass-retros';
+const WRITING_DOCS_STORAGE_KEY = 'udonpass-writing-docs';
 
 function loadProfile(): StudentProfile {
   try {
@@ -141,7 +142,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [resources, setResources] = useState<LearningResource[]>(initialResources);
   const [documents, setDocuments] = useState<SOPDocument[]>([]);
-  const [writingDocuments, setWritingDocuments] = useState<WritingDocument[]>([]);
+  const [writingDocuments, setWritingDocuments] = useState<WritingDocument[]>(
+    () => loadJson<WritingDocument[]>(WRITING_DOCS_STORAGE_KEY, []),
+  );
   const [studentProfile, setStudentProfile] = useState<StudentProfile>(loadProfile);
   const [stories, setStories] = useState<Story[]>(() => loadJson<Story[]>(STORIES_STORAGE_KEY, []));
   const [recommenders, setRecommenders] = useState<Recommender[]>(() => loadJson<Recommender[]>(RECOMMENDERS_STORAGE_KEY, []));
@@ -198,6 +201,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try { localStorage.setItem(RETROS_STORAGE_KEY, JSON.stringify(retrospectives)); } catch { /* ignore */ }
   }, [retrospectives]);
+  useEffect(() => {
+    try { localStorage.setItem(WRITING_DOCS_STORAGE_KEY, JSON.stringify(writingDocuments)); } catch { /* ignore */ }
+  }, [writingDocuments]);
 
   // ── Monthly usage reset ────────────────────────────────────────────
   // When a new calendar month begins, zero out the counters so the user
