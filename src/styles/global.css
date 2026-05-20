@@ -6620,6 +6620,22 @@ label { font-size: 13px; color: var(--text-soft); font-weight: 500; }
   .mhome-greet-row { display: block; }
 }
 
+/*
+ * Mobile landing isolation (mobile-redesign-v2 §5.1).
+ * On mobile the desktop landing sections must not render — the editorial
+ * MobileFirstOpen is the landing. Without this, the old PC landing scrolls
+ * underneath the welcome on small viewports.
+ */
+@media (max-width: 860px) {
+  .landing > .landing-topbar,
+  .landing > .landing-hero,
+  .landing > .numbers-strip,
+  .landing > .landing-moment,
+  .landing > .landing-pricing,
+  .landing > .landing-cta,
+  .landing > .landing-footer { display: none; }
+}
+
 /* ── Submit Celebrate — dignified, no confetti (§7) ─── */
 .submit-celebrate {
   position: fixed; inset: 0;

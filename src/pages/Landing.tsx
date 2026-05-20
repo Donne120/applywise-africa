@@ -8,8 +8,6 @@ import { useAuth } from '../context/AuthContext';
 import { useReveal } from '../utils/useReveal';
 import MobileFirstOpen from '../components/MobileFirstOpen';
 
-const FIRST_OPEN_KEY = 'udonpass-mobile-first-open-seen-v1';
-
 // ── Hero imagery ──────────────────────────────────────────────────────
 // Rich, specific African / world-campus photography. All Unsplash, hot-linked.
 const HERO_IMAGES = [
@@ -68,27 +66,16 @@ export default function Landing() {
     routeTo(`/checkout?plan=${plan}&period=${period}`);
   };
 
-  const [firstOpenSeen, setFirstOpenSeen] = useState<boolean>(() => {
-    // ?first=1 force-shows the welcome (useful for review/QA)
-    if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('first') === '1') {
-      try { localStorage.removeItem(FIRST_OPEN_KEY); } catch { /* ignore */ }
-      return false;
-    }
-    try { return localStorage.getItem(FIRST_OPEN_KEY) === '1'; } catch { return false; }
-  });
-  const dismissFirstOpen = () => {
-    try { localStorage.setItem(FIRST_OPEN_KEY, '1'); } catch { /* ignore */ }
-    setFirstOpenSeen(true);
-    begin();
-  };
-
   return (
     <div className="landing">
-      {!firstOpenSeen && (
-        <div className="landing-first-open-mobile">
-          <MobileFirstOpen onBegin={dismissFirstOpen} />
-        </div>
-      )}
+      {/*
+       * Mobile landing (mobile-redesign-v2 §5.1). CSS hides this at ≥861px
+       * and hides the desktop landing sections below 861px, so each viewport
+       * gets exactly one landing experience.
+       */}
+      <div className="landing-first-open-mobile">
+        <MobileFirstOpen onBegin={begin} />
+      </div>
       <Topbar onBegin={begin} />
       <Hero onBegin={begin} onPeek={skipToApp} />
       <NumbersStrip />
