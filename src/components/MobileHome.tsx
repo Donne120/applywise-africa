@@ -54,11 +54,23 @@ export default function MobileHome() {
     if (upcoming) {
       const status = buildDeadlineStatus(upcoming, stories.length, pendingDrafts.length);
       const hints: Hint[] = [];
+
+      // When the user has stories but no drafts yet, writing is the real next move.
+      // Promote it to the primary CTA; the scholarship workspace becomes a hint.
+      const promoteWriting = stories.length > 0 && pendingDrafts.length === 0;
+
       if (pendingDrafts[0]) {
         hints.push({
           id: 'draft',
           label: `Finish your ${pendingDrafts[0].writingType.toLowerCase()}`,
           to: '/writing',
+        });
+      }
+      if (promoteWriting) {
+        hints.push({
+          id: 'workspace',
+          label: `Open ${upcoming.name} workspace`,
+          to: `/applications/${upcoming.id}`,
         });
       }
       if (stories.length < 3) {
@@ -79,7 +91,9 @@ export default function MobileHome() {
       return {
         headline: upcoming.name,
         status,
-        cta: { label: 'Open workspace', to: `/applications/${upcoming.id}` },
+        cta: promoteWriting
+          ? { label: 'Start writing', to: `/writing?scholarship=${upcoming.id}` }
+          : { label: 'Open workspace', to: `/applications/${upcoming.id}` },
         hints: hints.slice(0, 2),
       };
     }
